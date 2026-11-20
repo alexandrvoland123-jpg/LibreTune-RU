@@ -11,48 +11,45 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
       - uses: dtolnay/rust-toolchain@stable
-      - name: Установка зависимостей
-        run: npm install
+      - name: Установка Tauri CLI
+        run: cargo install tauri-cli --version "^2.0.0" --locked
       - name: Сборка Tauri (Windows)
-        run: npx tauri build
+        run: cargo tauri build
+        working-directory: ./crates/libretune-app
       - name: Загрузить Windows
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: src-tauri/target/release/bundle/
+          path: crates/libretune-app/src-tauri/target/release/bundle/
 
   build-android:
     name: Сборка для Android
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
       - uses: android-actions/setup-android@v3
-      - name: Установка Android SDK пакетов
+      - name: Установка Android NDK
         run: |
           yes | sdkmanager --licenses
-          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26.3.11579264"
+          sdkmanager --install "ndk;26.3.11579264"
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
-      - name: Установка зависимостей
-        run: npm install
+      - name: Установка Tauri CLI
+        run: cargo install tauri-cli --version "^2.0.0" --locked
       - name: Инициализация Android
-        run: npx tauri android init
+        run: cargo tauri android init
+        working-directory: ./crates/libretune-app
       - name: Сборка Tauri (Android)
-        run: npx tauri android build
+        run: cargo tauri android build
+        working-directory: ./crates/libretune-app
       - name: Загрузить Android
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          path: crates/libretune-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
