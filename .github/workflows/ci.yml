@@ -1,17 +1,65 @@
-name: CI
+name: CI & Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
 jobs:
-  build-windows:
-    name: Сборка для Windows
-    runs-on: windows-latest
+  # --- БЛОК 1: ПРОВЕРКИ КОДА (Изначальный CI) ---
+  format:
+    name: Format
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: crates/libretune-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: crates/libretune-app/package-lock.json
+      - name: Install dependencies
+        run: npm ci --include=dev
+      - name: Build Frontend
+        run: npm run build
+
+  # --- БЛОК 2: СБОРКА ГОТОВЫХ ФАЙЛОВ ---
+  build-windows:
+    name: Сборка для Windows
+    needs: [format, frontend] # Запустится только если проверки кода пройдут
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Установка зависимостей фронтенда
+        run: npm ci --include=dev
+        working-directory: ./crates/libretune-app
       - name: Установка Tauri CLI
         run: cargo install tauri-cli --version "^2.0.0" --locked
       - name: Сборка Tauri (Windows)
@@ -25,6 +73,7 @@ jobs:
 
   build-android:
     name: Сборка для Android
+    needs: [format, frontend]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,13 +82,21 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
       - uses: android-actions/setup-android@v3
-      - name: Установка Android NDK
-        run: |
-          yes | sdkmanager --licenses
-          sdkmanager --install "ndk;26.3.11579264"
+        with:
+          packages: ''
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+      - name: Установка Android SDK и NDK
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26.3.11579264"
+      - name: Установка зависимостей фронтенда
+        run: npm ci --include=dev
+        working-directory: ./crates/libretune-app
       - name: Установка Tauri CLI
         run: cargo install tauri-cli --version "^2.0.0" --locked
       - name: Инициализация Android
@@ -53,3 +110,18 @@ jobs:
         with:
           name: android-apk
           path: crates/libretune-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+
+  # --- БЛОК 3: ОБЩИЙ СТАТУС (Чтобы не было красных крестиков, если что-то не так) ---
+  ci:
+    name: CI Final
+    if: always()
+    needs: [format, frontend, build-windows, build-android]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check all jobs
+        run: |
+          if [ "${{ needs.format.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ]; then
+            echo "Проверка кода не пройдена!"
+            exit 1
+          fi
+          echo "Всё отлично!"
