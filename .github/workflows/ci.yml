@@ -10,8 +10,8 @@ jobs:
     name: Сборка для Windows
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
       - uses: dtolnay/rust-toolchain@stable
@@ -20,7 +20,7 @@ jobs:
       - name: Сборка Tauri (Windows)
         run: npx tauri build
       - name: Загрузить Windows
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-installer
           path: src-tauri/target/release/bundle/
@@ -29,15 +29,15 @@ jobs:
     name: Сборка для Android
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: lts/*
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - name: Установка Android SDK пакетов
         run: |
           yes | sdkmanager --licenses
@@ -52,7 +52,7 @@ jobs:
       - name: Сборка Tauri (Android)
         run: npx tauri android build
       - name: Загрузить Android
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-apk
           path: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
