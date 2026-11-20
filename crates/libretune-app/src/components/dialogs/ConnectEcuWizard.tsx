@@ -142,7 +142,7 @@ export default function ConnectEcuWizard({ isOpen, onClose, inis, onIniImported,
     await invoke("disconnect_ecu").catch(() => {});
     try {
       const result = await invoke<ConnectResult>("connect_to_ecu", {
-        connectionType: transport === "wifi" ? "Tcp" : "Последовательный",
+        connectionType: transport === "wifi" ? "Tcp" : "Serial",
         portName: isSerialTransport(transport) ? port : "",
         baudRate: baud,
         tcpHost: transport === "wifi" ? host : null,
@@ -361,7 +361,7 @@ export default function ConnectEcuWizard({ isOpen, onClose, inis, onIniImported,
           await onConnect({
             port: isSerialTransport(transport) ? port : "",
             baud,
-            connectionType: transport === "wifi" ? "Tcp" : "Последовательный",
+            connectionType: transport === "wifi" ? "Tcp" : "Serial",
             tcpHost: host,
             tcpPort,
           }).catch(() => {
