@@ -206,8 +206,15 @@ pub fn run() {
         .with_target(true)
         .init();
 
-    tauri::Builder::default()
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+    let mut builder = tauri::Builder::default();
+
+    // Подключаем плагин состояния окон ТОЛЬКО для десктопа (Windows, Linux, macOS)
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        builder = builder.plugin(tauri_plugin_window_state::Builder::default().build());
+    }
+
+    builder
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -529,6 +536,12 @@ pub fn run() {
             });
             Ok(())
         })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests;
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
