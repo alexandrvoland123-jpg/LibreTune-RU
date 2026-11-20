@@ -1,0 +1,59 @@
+{
+  "file": {
+    "title": "&Файл",
+    "newProject": "&Новый проект…\tCtrl+N",
+    "importProject": "&Импорт проекта TS…",
+    "closeProject": "&Закрыть проект",
+    "saveTune": "&Сохранить тюн\tCtrl+S",
+    "saveTuneAs": "Сохранить тюн &как…",
+    "loadTune": "&Загрузить тюн…",
+    "createRestorePoint": "Создать &точку восстановления",
+    "restorePoints": "&Точки восстановления…",
+    "tuneHistory": "&История тюна…",
+    "burnToEcu": "&Прошить в ЭБУ\tCtrl+B",
+    "exit": "&Выход",
+    "settings": "&Настройки…"
+  },
+  "edit": {
+    "title": "&Правка",
+    "undo": "&Отменить\tCtrl+Z",
+    "redo": "&Повторить\tCtrl+Y",
+    "cut": "&Вырезать\tCtrl+X",
+    "copy": "&Копировать\tCtrl+C",
+    "paste": "&Вставить\tCtrl+V",
+    "resetToDefaults": "&Сбросить по умолчанию"
+  },
+  "view": {
+    "title": "&Вид",
+    "dashboard": "&Приборная панель",
+    "toggleSidebar": "Показать/скрыть &боковую панель",
+    "theme": "&Тема"
+  },
+  "tools": {
+    "title": "&Инструменты",
+    "autotune": "&Автонастройка",
+    "dataLogging": "&Запись данных",
+    "outputChannelStatus": "&Состояние выходных каналов",
+    "toothLogger": "Логгер &зубьев",
+    "compositeLogger": "&Композитный логгер",
+    "ecuConsole": "&Консоль ЭБУ",
+    "ecuLuaEditor": "Редактор &Lua для ЭБУ",
+    "updateFirmware": "Обновить &прошивку ЭБУ…",
+    "enterDfuMode": "Войти в режим &DFU…",
+    "tableCompare": "С&равнение таблиц",
+    "tuneFileDiff": "Р&азличия файлов тюна…",
+    "dynoData": "&Данные динамометра…",
+    "mathChannels": "&Математические каналы…",
+    "generateBaseMap": "Создать &базовую карту…",
+    "plugins": "&Плагины…",
+    "aiAssistant": "&ИИ-ассистент",
+    "ecuConnection": "&Подключение к ЭБУ…",
+    "checkUpdates": "Проверить &обновления…"
+  },
+  "help": {
+    "title": "&Справка",
+    "userManual": "&Руководство пользователя",
+    "keyboardShortcuts": "&Сочетания клавиш",
+    "about": "&О программе LibreTune"
+  }
+}

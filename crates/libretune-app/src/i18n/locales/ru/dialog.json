@@ -1,0 +1,23 @@
+{
+  "cellEdit": {
+    "title": "Изменить значение ячейки",
+    "decreaseBy1": "Уменьшить на 1",
+    "decreaseByPoint1": "Уменьшить на 0,1",
+    "increaseBy1": "Увеличить на 1",
+    "increaseByPoint1": "Увеличить на 0,1",
+    "validNumber": "Введите корректное число",
+    "valueAtLeast": "Значение должно быть не меньше {{min}}",
+    "valueAtMost": "Значение должно быть не больше {{max}}"
+  },
+  "settings": {
+    "title": "Настройки",
+    "language": "Язык",
+    "languageDescription": "Язык интерфейса. Перезапуск не требуется."
+  },
+  "newProject": {
+    "title": "Новый проект",
+    "projectName": "Название проекта",
+    "iniFile": "Файл определения INI",
+    "create": "Создать"
+  }
+}
