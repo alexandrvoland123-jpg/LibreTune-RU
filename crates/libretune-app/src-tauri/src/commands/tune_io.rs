@@ -2,6 +2,8 @@
 
 use crate::state::AppState;
 use libretune_core::ini::{CommandPart, EcuDefinition};
+
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 use tauri_plugin_window_state::{AppHandleExt, StateFlags};
 
 /// Lists all tune files in the projects directory.
@@ -69,7 +71,9 @@ pub async fn burn_to_ecu(
         }
     }
 
-    // Save window state before critical operation (in case of crash)
+    // Save window state before critical operation (in case of crash).
+    // Window state is available only in desktop builds.
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
     let _ = app.save_window_state(StateFlags::all());
 
     let mut conn_guard = state.connection.lock().await;
