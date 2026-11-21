@@ -200,7 +200,7 @@ pub fn run() {
         // was lost that way, including the line naming which AFR target table
         // had been resolved.
         .with_writer(std::io::stderr)
-        // Keep the module path: with `RUST_LOG` filtering by target, a line
+        // Keep the module path: with RUST_LOG filtering by target, a line
         // that does not say where it came from cannot be traced back to the
         // directive that did or did not select it.
         .with_target(true)
@@ -281,6 +281,7 @@ pub fn run() {
             export_table_to_file,
             import_table_from_file,
             get_curve_data,
+            update_curve_data,
             get_tables,
             get_curves,
             get_gauge_configs,
@@ -536,12 +537,6 @@ pub fn run() {
             });
             Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
-
-#[cfg(test)]
-mod tests;
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
