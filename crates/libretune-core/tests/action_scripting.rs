@@ -1,3 +1,6 @@
+
+// 1. Этот файл целиком заменяет crates/libretune-core/tests/action_scripting.rs
+
 //! Tests for action scripting system
 
 #[cfg(test)]
@@ -273,7 +276,7 @@ mod tests {
 
         let result = recorder.record_action(action);
         assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "No recording in progress");
+        assert_eq!(result.unwrap_err(), "Запись не выполняется");
     }
 
     #[test]
@@ -295,3 +298,4 @@ mod tests {
         assert!(stopped.is_some());
     }
 }
+
