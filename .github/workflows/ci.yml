@@ -16,7 +16,6 @@ jobs:
         with:
           node-version: '20'
       - uses: dtolnay/rust-toolchain@stable
-      # Удален шаг cargo fmt --check
       - name: Установка зависимостей
         run: npm ci
         working-directory: ./crates/libretune-app
@@ -53,6 +52,11 @@ jobs:
         run: |
           yes | sdkmanager --licenses
           sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;26.3.11579264"
+      - name: Сохранение ключа подписи Android
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: libretune-android-debug-keystore-v1
       - name: Установка зависимостей
         run: npm ci
         working-directory: ./crates/libretune-app
@@ -64,8 +68,40 @@ jobs:
       - name: Сборка Tauri (Android)
         run: cargo tauri android build
         working-directory: ./crates/libretune-app
+      - name: Подписание Android APK
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.android"
+
+          if [ ! -f "$HOME/.android/debug.keystore" ]; then
+            keytool -genkeypair -v \
+              -keystore "$HOME/.android/debug.keystore" \
+              -storetype JKS \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+          APK_UNSIGNED="crates/libretune-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk"
+          APK_SIGNED="crates/libretune-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk"
+
+          APKSIGNER="$ANDROID_HOME/build-tools/34.0.0/apksigner"
+
+          "$APKSIGNER" sign \
+            --ks "$HOME/.android/debug.keystore" \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out "$APK_SIGNED" \
+            "$APK_UNSIGNED"
+
+          "$APKSIGNER" verify --verbose --print-certs "$APK_SIGNED"
       - name: Загрузить Android
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: crates/libretune-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          path: crates/libretune-app/src-tauri/gen/android/app/build/outputs/apk/universal/release/*-signed.apk
