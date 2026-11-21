@@ -1,3 +1,4 @@
+
 name: Build LibreTune
 
 on:
@@ -28,7 +29,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-installer
-          path: crates/libretune-app/src-tauri/target/release/bundle/
+          path: target/release/bundle/
 
   build-android:
     name: Сборка для Android
